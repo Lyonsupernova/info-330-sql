@@ -1,0 +1,92 @@
+
+--*************************************************************************--
+-- Title: SkillCheck02
+-- Author: LLu
+-- Desc: This file demonstrates how to create a database
+-- Change Log: When,Who,What
+-- 2020-01-01,LLu,Created File
+--**************************************************************************--
+
+-- Task 01 (10 Min): Use the following data to design and create a database 
+-- (Include Primary Key, Foriegn Key and Not Null constraints).
+/*
+first_name,last_name,department
+Nicky,Kuschek,Legal
+Rubie,Hargrave,Sales
+Onfroi,Rushworth,Legal
+Atlante,Samper,Legal
+Brigida,Bufton,Engineering
+*/
+ 
+Use Master;
+go
+If Exists(Select Name from SysDatabases Where Name = 'SkillCheck2_LLu')
+Begin 
+Alter Database [SkillCheck2_LLu] set Single_user With Rollback Immediate;
+End
+go
+Create Database SkillCheck2_LLu;
+go
+Use SkillCheck2_LLu;
+go
+
+Create Table Department(
+    DepartmentID int Not Null Constraint pkDepID Primary Key(DepartmentID) Identity,
+    DepartmentName nvarchar(100) Not Null 
+)
+go
+Create Table Employeee(
+    EmployeeID int Not Null Constraint pkEmployID Primary Key(EmployeeID) Identity,
+    EmployeeFirstName nvarchar(100) Not Null,
+    EmployeeLastName nvarchar(100) Not Null,
+    DepartmentID int Not Null Constraint fkDepID Foreign Key(DepartmentID) References Department(DepartmentID)
+)
+go
+-- Task 02 (5 Min): Create a Base View for each table.
+Create Or Alter View vDepartment 
+As 
+    Select DepartmentID,
+           DepartmentName
+    From Department
+go
+Create Or Alter View vEmployeee 
+As 
+    Select EmployeeID,
+           EmployeeName = EmployeeFirstName + ' ' + EmployeeLastName,
+           DepartmentID
+    From Employeee
+go
+-- Task 03 (5 Min): Insert the sample data into the tables.
+/*
+first_name,last_name,department
+Nicky,Kuschek,Legal
+Rubie,Hargrave,Sales
+Onfroi,Rushworth,Legal
+Atlante,Samper,Legal
+Brigida,Bufton,Engineering
+*/
+Insert Into Department Values('Legal');
+go
+Insert Into Department Values('Sales');
+go
+Insert Into Department Values('Engineering');
+go
+Insert Into Employeee Values('Nicky', 'Kuschek', (Select DepartmentID  from Department Where DepartmentName = 'Legal'));
+go
+Insert Into Employeee Values('Rubie', 'Hargrave', (Select DepartmentID  from Department Where DepartmentName = 'Sales'));
+go
+Insert Into Employeee Values('Onfroi', 'Rushworth', (Select DepartmentID  from Department Where DepartmentName = 'Legal'));
+go
+Insert Into Employeee Values('Atlante', 'Samper', (Select DepartmentID  from Department Where DepartmentName = 'Legal'));
+go
+Insert Into Employeee Values('Brigida', 'Bufton', (Select DepartmentID  from Department Where DepartmentName = 'Engineering'));
+go
+-- Task 04 (5 Min): Place the Insert code into Stored Procedures and test that they work. 
+-- (Use the following starter code as a guide)
+
+
+Create Or Alter Procedure pInsMyTableName(@DepartmentName nvarchar(100))
+As
+Begin
+    Insert Into pInsMyTableName Values(@DepartmentName)
+End 
